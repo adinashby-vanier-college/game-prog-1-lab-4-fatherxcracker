@@ -15,6 +15,7 @@ public class Lobster extends Actor
     public Lobster()
     {
         turn(Greenfoot.getRandomNumber(360));
+        
     }
 
     /**
@@ -23,6 +24,15 @@ public class Lobster extends Actor
     public void act()
     {
         moveAround();
+        eat();
+        zombify();
+        
+        if (isGameOver2()) {
+            transitionToGameOverWorld();
+        }
+        if (isGameOver()) {
+            transitionToGameOverWorld();
+        }
     }
 
     /**
@@ -36,6 +46,72 @@ public class Lobster extends Actor
         }
         if (isAtEdge()) {
             turn(180);
+        }
+    }
+
+    /**
+     * 
+     */
+    public void eat()
+    {
+        Actor crab = getOneIntersectingObject(Crab.class);
+        if (crab != null) {
+            World world = getWorld();
+            world.removeObject(crab);
+            Greenfoot.playSound("horror-hit-logo-142395.mp3");
+        }
+    }
+
+    /**
+     * 
+     */
+    public boolean isGameOver()
+    {
+        World world = getWorld();
+        if (world.getObjects(Crab.class).isEmpty()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * 
+     */
+    public boolean isGameOver2()
+    {
+        World world = getWorld();
+        if (world.getObjects(Worm.class).isEmpty()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * Make the current world, the GameOverWorld!
+     */
+    public void transitionToGameOverWorld()
+    {
+        World gameOverWorld =  new  GameOverWorld();
+        Greenfoot.setWorld(gameOverWorld);
+    }
+
+    /**
+     * 
+     */
+    public void zombify()
+    {
+        Actor worm = (Worm)getOneIntersectingObject(Worm.class);
+        if (worm != null) {
+            int wormX = worm.getX();
+            int wormY = worm.getY();
+            World world = getWorld();
+            world.removeObject(worm);
+            Lobster newLobster =  new  Lobster();
+            world.addObject(newLobster, wormX, wormY);
         }
     }
 }
